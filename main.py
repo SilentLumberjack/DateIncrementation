@@ -3,15 +3,50 @@ import random
 
 
 def check_if_leap_year(year: int):
-    pass
+    return (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
 
 
 def get_num_of_days_in_month(month: int, year: int):
-    pass
+    """
+    Returns a number of days in a given month.
+    :param month: integer variable in range from 1 to 12.
+    :param year: integer variable to check is year leap or not.
+    :return: integer, number of days in a given month.
+    """
+    month_values = {"thirty one": [1, 3, 5, 7, 8, 10, 12],
+                    "thirty": [4, 6, 9, 11],
+                    "twenty eight or nine": [2]}
+    if month in month_values["thirty one"]:
+        result = 31
+    elif month in month_values["thirty"]:
+        result = 30
+    else:
+        result = 29 if check_if_leap_year(year) else 28
+    return result
 
 
 def calculate_date(date: str, number_of_days: int):
-    pass
+    """
+    Takes a date if format dd.mm.yyyy and a number of days, that should be added to the date. Returns incremented date.
+    :param date: string, that represents date that should be incremented. Format for date is dd.mm.yyyy
+    :param number_of_days: integer, that represent a number of days that should be added to the date.
+    :return: string, that represents changed date. Format for date is dd.mm.yyyy
+    """
+    date = date.split(".")
+    date = [int(num) for num in date]
+    date = {"day": date[0], "month": date[1], "year": date[2]}
+    while number_of_days:
+        days_in_month = get_num_of_days_in_month(date["month"], date["year"])
+        added_days_to_month = days_in_month - date["day"] + 1
+        if number_of_days >= added_days_to_month:
+            date["day"] = 1
+            date["month"] = date["month"] + 1 if date["month"] != 12 else 1
+            date["year"] = date["year"] + 1 if date["month"] == 1 else date["year"]
+            number_of_days -= added_days_to_month
+        else:
+            date["day"] += number_of_days
+            break
+    return ".".join(["0" + str(num) if len(str(num)) == 1 else str(num) for num in list(date.values())])
 
 
 def test_implementation(foo):
@@ -60,3 +95,5 @@ def test_implementation(foo):
 
 if __name__ == "__main__":
     test_implementation(calculate_date)
+    print("Manual test number 1:", calculate_date("10.01.2008", 10))
+    print("Manual test number 2:", calculate_date("29.06.2020", 8))
